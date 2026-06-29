@@ -489,23 +489,6 @@ worker/data/links.json          web/data/config.json
 
 ---
 
-## 与 codingplan.fyi 的差异
-
-| 维度 | codingplan.fyi | 本项目 |
-|---|---|---|
-| 框架 | 无（裸 HTML+JS） | Astro 4（仍 0 运行时 JS）|
-| 数据校验 | 无 | Zod schema + CI 检查 |
-| 部署 | Tencent COS + Cloudflare | Cloudflare Pages |
-| 短链 | 腾讯 SCF + OpenResty | Cloudflare Worker + KV |
-| 数据修改 | PR 改 JSON | 同 |
-| 主题 | 仅浅色 | 3 套主题（深色/浅色/终端）|
-| 对比能力 | 基本表格 | 排序 + 筛选 + 多选对比 + Drawer |
-| 成本估算 | 无 | 滑杆驱动动态排名 |
-| Cmd-K | 无 | 结构化查询命令面板 |
-| 视觉风格 | 奶油色圆角 pill | 深色玻璃态+方形圆角+极光 |
-
----
-
 ## License
 
 MIT
