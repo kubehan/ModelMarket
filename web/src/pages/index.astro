@@ -1,0 +1,148 @@
+---
+import Base from '../layouts/Base.astro'
+import PlanCard from '../components/PlanCard.astro'
+import FilterBar from '../components/FilterBar.astro'
+import PlanTable from '../components/PlanTable.astro'
+import CmdK from '../components/CmdK.astro'
+import CompareTray from '../components/CompareTray.astro'
+import CostCalc from '../components/CostCalc.astro'
+import PlanDrawer from '../components/PlanDrawer.astro'
+import { config, plans, updatedAt, resolveRecommendation } from '../lib/data'
+import { deriveAll } from '../lib/derive'
+
+const totalPlans = plans.length
+const totalVendors = new Set(plans.map(p => p.vendor)).size
+const totalModels  = new Set(plans.flatMap(p => p.models)).size
+
+const accents: Array<'violet' | 'cyan' | 'emerald' | 'amber'> = ['violet', 'cyan', 'emerald', 'amber']
+const derived = deriveAll(plans)
+---
+
+<Base>
+  <!-- ============== Hero ============== -->
+  <section class="relative pt-20 pb-16 sm:pt-28 sm:pb-24 overflow-hidden">
+    <div class="hero-grid"></div>
+
+    <div class="container-fluid relative">
+      <!-- Tag -->
+      <div class="flex justify-center fade-up">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass text-xs font-medium">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span class="text-fg-2">数据更新于</span>
+          <span class="font-mono text-fg-1">{updatedAt}</span>
+          <span class="text-fg-4">·</span>
+          <span class="text-fg-3">{totalPlans} 套餐 / {totalVendors} 平台</span>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <h1 class="mt-6 text-center text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] fade-up fade-up-delay-1">
+        <span class="block text-fg-1">AI Coding Plan</span>
+        <span class="block text-gradient">深度对比 · 智能选型</span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="mt-6 max-w-2xl mx-auto text-center text-base sm:text-lg text-fg-2 leading-relaxed fade-up fade-up-delay-2">
+        {config.site.description}
+      </p>
+
+      <!-- 卖点条 -->
+      {config.site.updatedNote && (
+        <div class="mt-8 max-w-3xl mx-auto fade-up fade-up-delay-3">
+          <div class="glass rounded-xl p-4 flex items-start gap-3">
+            <span class="text-xl">⚡</span>
+            <p class="text-sm text-fg-2 leading-relaxed">{config.site.updatedNote}</p>
+          </div>
+        </div>
+      )}
+
+      <!-- 统计条 -->
+      <div class="mt-12 grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto fade-up fade-up-delay-3">
+        <div class="glass rounded-xl p-4 sm:p-5 text-center">
+          <div class="font-mono text-3xl sm:text-4xl font-bold text-gradient">{totalPlans}</div>
+          <div class="mt-1 text-[11px] uppercase tracking-wider text-fg-3">套餐</div>
+        </div>
+        <div class="glass rounded-xl p-4 sm:p-5 text-center">
+          <div class="font-mono text-3xl sm:text-4xl font-bold text-gradient">{totalVendors}</div>
+          <div class="mt-1 text-[11px] uppercase tracking-wider text-fg-3">平台</div>
+        </div>
+        <div class="glass rounded-xl p-4 sm:p-5 text-center">
+          <div class="font-mono text-3xl sm:text-4xl font-bold text-gradient">{totalModels}+</div>
+          <div class="mt-1 text-[11px] uppercase tracking-wider text-fg-3">模型</div>
+        </div>
+      </div>
+
+      <!-- CTA 锚定 -->
+      <div class="mt-12 flex justify-center fade-up fade-up-delay-3">
+        <a href="#compare" class="btn-primary">
+          查看完整对比
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12l-7 7-7-7M12 5v14"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== 推荐位分组 ============== -->
+  <section class="container-fluid py-12 sm:py-16 space-y-16">
+    {config.recommendationGroups.map((group, gi) => {
+      const list = resolveRecommendation(group.key)
+      if (list.length === 0) return null
+      const accent = accents[gi % accents.length]
+      return (
+        <div class="fade-up">
+          <div class="mb-7 flex items-end justify-between gap-4">
+            <div>
+              <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-fg-1">{group.title}</h2>
+              {group.subtitle && <p class="text-sm text-fg-3 mt-1.5">{group.subtitle}</p>}
+            </div>
+            <div class="hidden sm:flex items-center gap-2 text-xs text-fg-3">
+              <span class="font-mono">{list.length}</span>
+              <span>个推荐</span>
+              <span class="w-8 h-px bg-line-2"></span>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 gap-5">
+            {list.map(p => <PlanCard plan={p} accent={accent} derived={derived.get(p.id)} />)}
+          </div>
+        </div>
+      )
+    })}
+  </section>
+
+  <!-- ============== 对比表 ============== -->
+  <section id="compare" class="container-fluid py-12 sm:py-16 scroll-mt-20">
+    <div class="mb-6 flex items-end justify-between flex-wrap gap-3">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-[10px] uppercase tracking-[0.15em] font-bold text-fg-3 mb-3">
+          <span class="dot dot-live"></span>
+          Live Comparison
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-fg-1">全部套餐对比</h2>
+        <p class="text-sm text-fg-3 mt-1.5">价格 · 用量 · 模型 · 状态 · 16 维度对比</p>
+      </div>
+      <p class="text-xs text-fg-4 font-mono">← scroll for more →</p>
+    </div>
+    <FilterBar />
+    <PlanTable />
+
+    <!-- 评分说明 -->
+    <div class="mt-8 glass rounded-2xl p-5 text-xs sm:text-sm text-fg-3 leading-relaxed">
+      <strong class="text-fg-2">评分标准：</strong>
+      基准 3 颗星，价格优势 / 劣势 ±1 分，模型优势或独占模型 +1 分，其他优势 +1 分。
+      TokenPlan 因性价比相对较低，未纳入推荐位，但保留在对比表内。
+    </div>
+  </section>
+
+  <!-- ============== 浮层组件 ============== -->
+  <CmdK />
+  <CompareTray />
+  <CostCalc />
+  <PlanDrawer />
+
+  <script>
+    import '../scripts/filter'
+  </script>
+</Base>

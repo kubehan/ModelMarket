@@ -1,0 +1,17 @@
+---
+// 选中要对比的套餐后底部出现，点"对比"打开右侧 Drawer
+---
+<div id="compare-tray" class="tray" role="toolbar" aria-label="比较套餐">
+  <div class="flex items-center gap-2">
+    <svg class="text-violet-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    <span class="text-sm text-fg-2">已选 <strong id="tray-count" class="text-fg-1 font-mono">0</strong> 个</span>
+  </div>
+  <div id="tray-list" class="flex items-center gap-1 max-w-[340px] overflow-x-auto">
+    <!-- 注入 chip -->
+  </div>
+  <button id="tray-clear" type="button" class="btn-ghost !text-xs !py-1">清空</button>
+  <button id="tray-compare" type="button" class="btn-primary !text-xs !py-1.5">
+    并排对比
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </button>
+</div>

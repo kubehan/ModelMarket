@@ -1,0 +1,84 @@
+---
+import type { Plan } from '../lib/schema'
+import { plans } from '../lib/data'
+import { deriveAll, monogramSVG, pricesSparkline, fmtRelativeDays } from '../lib/derive'
+
+const derived = deriveAll(plans)
+
+function typeLabel(t: Plan['type']) {
+  return t === 'coding' ? 'CODING' : t === 'agent' ? 'AGENT' : 'TOKEN'
+}
+function fmtPrice(p?: number, cls = 'price-mid') {
+  if (p == null || p === 0) return '<span class="price-mute">—</span>'
+  return `<span class="${cls}">¥${p.toLocaleString()}</span>`
+}
+function fmtFirst(p?: number) {
+  if (p == null || p === 0) return '<span class="price-mute">—</span>'
+  return `<span class="price-strong">¥${p.toLocaleString()}</span>`
+}
+function fmtNum(n?: number) {
+  if (n == null || n === 0) return '<span class="price-mute">—</span>'
+  return `<span class="num text-fg-1">${n.toLocaleString()}</span>`
+}
+function fmtTokens(m?: number) {
+  if (m == null || m === 0) return '<span class="price-mute">—</span>'
+  if (m >= 1000) return `<span class="num text-fg-1 font-semibold">${(m / 1000).toFixed(1)}<small class="text-fg-3 text-[10px] ml-0.5">B</small></span>`
+  return `<span class="num text-fg-1 font-semibold">${m}<small class="text-fg-3 text-[10px] ml-0.5">M</small></span>`
+}
+function statusBadge(s: Plan['status']) {
+  const map = {
+    active:   { cls: 'chip-emerald', dot: 'dot-live',   label: '在售' },
+    limited:  { cls: 'chip-amber',   dot: 'dot-warn',   label: '限购' },
+    sold_out: { cls: 'chip-rose',    dot: 'dot-danger', label: '售罄' },
+    offline:  { cls: 'chip',         dot: 'dot-muted',  label: '已下线' }
+  }
+  return map[s]
+}
+---
+<div class="glass rounded-2xl overflow-hidden relative">
+  <div class="scroll-x overflow-x-auto relative">
+    <table class="w-full text-sm" id="plan-table">
+      <thead class="bg-gradient-to-r from-violet-500/[0.08] via-cyan-500/[0.08] to-emerald-500/[0.08] border-b border-line-2">
+        <tr class="text-[10px] uppercase tracking-[0.12em] text-fg-3 font-semibold">
+          <th class="sticky-col px-3 py-3.5 w-10 !bg-bg-1"></th>
+          <th class="sticky-col px-3 py-3.5 min-w-[180px] text-left !bg-bg-1 sortable" data-sort="vendor" style="left: 40px;">平台 · 套餐</th>
+          <th class="text-left px-3 py-3.5 min-w-[90px] sortable" data-sort="type">类型</th>
+          <th class="text-left px-3 py-3.5 min-w-[80px] sortable" data-sort="rating">评分</th>
+          <th class="text-right px-3 py-3.5 min-w-[95px] sortable" data-sort="firstMonthPrice">首月</th>
+          <th class="text-right px-3 py-3.5 min-w-[95px] sortable" data-sort="monthlyPrice">月付</th>
+          <th class="text-right px-3 py-3.5 min-w-[95px] sortable" data-sort="quarterlyPrice">季付</th>
+          <th class="text-right px-3 py-3.5 min-w-[95px] sortable" data-sort="yearlyPrice">年付</th>
+          <th class="text-right px-3 py-3.5 min-w-[110px] sortable" data-sort="pricePerMillion">¥/1M Token</th>
+          <th class="text-right px-3 py-3.5 min-w-[90px] sortable" data-sort="requestsPer5h">5h 请求</th>
+          <th class="text-right px-3 py-3.5 min-w-[100px] sortable" data-sort="tokenLimitM">月 Token</th>
+          <th class="text-left px-3 py-3.5 min-w-[280px]">支持模型</th>
+          <th class="text-left px-3 py-3.5 min-w-[150px]">权益</th>
+          <th class="text-left px-3 py-3.5 min-w-[100px]">状态</th>
+          <th class="text-right px-3 py-3.5 min-w-[110px] sticky right-0 !bg-bg-1">操作</th>
+        </tr>
+      </thead>
+      <tbody set:html={plans.map(function(p){
+          var st=statusBadge(p.status),d=derived.get(p.id),mono=monogramSVG(p.vendorMonogram||p.vendor.slice(0,2),28),verified=fmtRelativeDays(d?.verifiedDaysAgo??null),fresh=d?.verifiedDaysAgo!=null&&d.verifiedDaysAgo<=7
+          var attrs=' class="plan-row border-b border-line-1 transition-colors'+(p.status==='offline'?' discontinued':'')+'" data-id="'+p.id+'" data-vendor="'+p.vendor+'" data-type="'+p.type+'" data-status="'+p.status+'" data-tags="'+p.tags.join(',')+'" data-models="'+p.models.join(',')+'" data-search="'+(p.vendor+' '+p.name+' '+p.models.join(' ')+' '+p.tags.join(' ')).toLowerCase()+'" data-rating="'+p.rating+'" data-first-month-price="'+(p.firstMonthPrice??'')+'" data-monthly-price="'+(p.monthlyPrice??'')+'" data-quarterly-price="'+(p.quarterlyPrice??'')+'" data-yearly-price="'+(p.yearlyPrice??'')+'" data-price-per-million="'+(d?.pricePerMillion??'')+'" data-requests-per-5h="'+(p.requestsPer5h??'')+'" data-token-limit-m="'+(p.tokenLimitM??'')+'"'
+          var chk='<input type="checkbox" class="cmp-check" data-cmp data-id="'+p.id+'" aria-label="选择 '+p.name+' 用于对比">'
+          var vtxt=verified?'<span class="text-fg-4">·</span><span class="'+(fresh?'text-emerald-400':'text-fg-3')+'">'+verified+'</span>':''
+          var rchg=d?.recentlyChanged?'<span class="text-rose-400 font-medium">↻</span>':''
+          var ms=p.models.slice(0,4).map(function(m){return '<span class="chip chip-cyan font-mono text-[10px]">'+m+'</span>'}).join('')+(p.models.length>4?'<span class="chip">+'+(p.models.length-4)+'</span>':'')
+          var bns=p.benefits.map(function(b){return '<span class="chip chip-amber">'+b+'</span>'}).join('')
+          var ppm=d?.pricePerMillion!=null?'<div><div class="font-mono text-sm font-semibold text-emerald-400">¥'+d.pricePerMillion+'</div><div class="meter mt-1"><i style="width:'+d.valuePercentile+'%"></i></div></div>':'<span class="price-mute">—</span>'
+          var tp=d?.tokenPercentile!=null&&p.tokenLimitM?'<div class="meter mt-1"><i style="width:'+d.tokenPercentile+'%"></i></div>':''
+          var act=p.status!=='offline'?'<a class="btn-primary !text-xs !py-1 !px-2.5" href="'+(p.actionSlug?'/r/'+p.actionSlug:p.actionUrl||p.vendorOfficialUrl||'#')+'" target="_blank" rel="noopener sponsored">前往</a>':''
+          return '<tr'+attrs+'><td class="sticky-col px-3 py-3 text-center !bg-bg-1">'+chk+'</td><td class="sticky-col px-3 py-3 !bg-bg-1" style="left:40px"><div class="flex items-center gap-2.5"><div class="shrink-0">'+mono+'</div><div class="min-w-0"><div class="font-semibold text-fg-1 leading-tight truncate">'+p.name+'</div><div class="flex items-center gap-1.5 mt-0.5 text-[10px] text-fg-3"><span>'+p.vendor+'</span>'+vtxt+rchg+'</div></div></div></td><td class="px-3 py-3"><span class="type-tag type-'+p.type+'">'+typeLabel(p.type)+'</span></td><td class="px-3 py-3"><div class="rating-bar">'+Array.from({length:5}).map(function(_,i){return '<i class="'+(i<p.rating?'on':'')+'"></i>'}).join('')+'</div></td><td class="px-3 py-3 text-right">'+fmtFirst(p.firstMonthPrice)+'</td><td class="px-3 py-3 text-right">'+fmtPrice(p.monthlyPrice)+'</td><td class="px-3 py-3 text-right">'+fmtPrice(p.quarterlyPrice)+'</td><td class="px-3 py-3 text-right">'+fmtPrice(p.yearlyPrice)+'</td><td class="px-3 py-3 text-right">'+ppm+'</td><td class="px-3 py-3 text-right">'+fmtNum(p.requestsPer5h)+'</td><td class="px-3 py-3 text-right"><div>'+fmtTokens(p.tokenLimitM)+'</div>'+tp+'</td><td class="px-3 py-3"><div class="flex flex-wrap gap-1 max-w-[280px]">'+ms+'</div></td><td class="px-3 py-3"><div class="flex flex-wrap gap-1 max-w-[180px]">'+bns+'</div></td><td class="px-3 py-3"><span class="chip '+st.cls+'"><span class="dot '+st.dot+'"></span>'+st.label+'</span></td><td class="px-3 py-3 text-right sticky right-0 !bg-bg-1"><div class="flex items-center justify-end gap-1.5"><button type="button" class="btn-ghost !px-2 !py-1 detail-btn" data-id="'+p.id+'" title="查看详情" aria-label="'+p.name+' 详情"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg></button>'+act+'</div></td></tr>'
+        }).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <div id="empty-state" class="hidden p-20 text-center text-fg-3">
+    <svg class="mx-auto mb-4 opacity-30" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+    </svg>
+    <p class="font-medium text-fg-1 text-base">没有命中的套餐</p>
+    <p class="text-xs mt-1.5 text-fg-3">试试放宽筛选条件或重置</p>
+  </div>
+</div>

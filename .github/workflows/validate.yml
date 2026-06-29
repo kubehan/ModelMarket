@@ -1,0 +1,24 @@
+name: Validate Data
+on:
+  pull_request:
+    paths:
+      - 'web/data/**'
+      - 'web/scripts/validate-data.mjs'
+      - 'web/src/lib/schema.ts'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        working-directory: web
+        run: npm ci
+      - name: Validate JSON
+        working-directory: web
+        run: node scripts/validate-data.mjs

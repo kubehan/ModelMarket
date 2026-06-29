@@ -1,0 +1,126 @@
+---
+import type { Plan } from '../lib/schema'
+import { monogramSVG, pricesSparkline, fmtRelativeDays } from '../lib/derive'
+interface Props {
+  plan: Plan
+  accent?: 'violet' | 'cyan' | 'emerald' | 'amber'
+  derived?: import('../lib/derive').PlanDerived
+}
+const { plan, accent = 'violet', derived } = Astro.props
+
+const monogram = monogramSVG(plan.vendorMonogram || plan.vendor.slice(0, 2), 40)
+const spark    = pricesSparkline(plan, 96, 28)
+const verified = fmtRelativeDays(derived?.verifiedDaysAgo ?? null)
+const fresh    = derived?.verifiedDaysAgo != null && derived.verifiedDaysAgo <= 7
+
+const action = plan.actionSlug
+  ? `/r/${plan.actionSlug}`
+  : (plan.actionUrl || plan.vendorOfficialUrl || '#')
+
+const statusMap = {
+  active:   { dot: 'dot-live',   label: '在售'   },
+  limited:  { dot: 'dot-warn',   label: '限购中' },
+  sold_out: { dot: 'dot-danger', label: '售罄' },
+  offline:  { dot: 'dot-muted',  label: '已下线' }
+} as const
+const st = statusMap[plan.status]
+
+const accentGlow = {
+  violet:  '0 0 80px -20px rgba(139,92,246,0.5)',
+  cyan:    '0 0 80px -20px rgba(6,182,212,0.5)',
+  emerald: '0 0 80px -20px rgba(16,185,129,0.5)',
+  amber:   '0 0 80px -20px rgba(245,158,11,0.5)'
+}
+---
+
+<article
+  class="group relative glass rounded-xl2 p-5 hover:glass-strong transition-all duration-300 overflow-hidden"
+  style={`box-shadow: ${accentGlow[accent]}, var(--tw-shadow);`}
+  data-plan-id={plan.id}
+>
+  <!-- 顶部：Monogram + 平台 + 状态 + 评分 -->
+  <header class="flex items-start gap-3 mb-4">
+    <div class="shrink-0" set:html={monogram}></div>
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center justify-between gap-2">
+        <div class="text-[11px] font-medium text-fg-3 uppercase tracking-wider">{plan.vendor}</div>
+        <div class="rating-bar" title={`${plan.rating}/5`}>
+          {Array.from({length: 5}).map((_, i) => (
+            <i class={i < plan.rating ? 'on' : ''}></i>
+          ))}
+        </div>
+      </div>
+      <h3 class="text-base font-bold text-fg-1 leading-tight tracking-tight mt-0.5 truncate">{plan.name}</h3>
+      <div class="flex items-center gap-1.5 mt-1.5 text-[10px]">
+        <span class={`dot ${st.dot}`}></span>
+        <span class="text-fg-3">{st.label}</span>
+        {verified && (
+          <>
+            <span class="text-fg-4">·</span>
+            <span class={fresh ? 'badge-fresh' : 'badge-stale'}>{verified}</span>
+          </>
+        )}
+        {derived?.recentlyChanged && (
+          <span class="badge-changed">价格变动</span>
+        )}
+      </div>
+    </div>
+  </header>
+
+  <!-- 推荐理由 -->
+  {plan.highlights.length > 0 && (
+    <ul class="space-y-1.5 text-[13px] leading-relaxed text-fg-2 mb-4">
+      {plan.highlights.map(h => (
+        <li class="flex gap-2">
+          <span class="text-cyan-400 font-bold shrink-0 mt-0.5">›</span>
+          <span set:html={h} />
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <!-- 标签 -->
+  {plan.tags.length > 0 && (
+    <div class="flex flex-wrap gap-1.5 mb-4">
+      {plan.tags.slice(0, 4).map(t => <span class="chip chip-violet">{t}</span>)}
+    </div>
+  )}
+
+  <!-- 性价比 meter -->
+  {derived?.valuePercentile != null && derived.valuePercentile > 0 && (
+    <div class="mb-4">
+      <div class="flex items-center justify-between text-[10px] text-fg-3 mb-1 uppercase tracking-wider">
+        <span>性价比指数</span>
+        <span class="font-mono text-fg-2">Top {Math.max(1, 100 - derived.valuePercentile)}%</span>
+      </div>
+      <div class="meter"><i style={`width: ${derived.valuePercentile}%`}></i></div>
+    </div>
+  )}
+
+  <div class="divider-glow mb-3"></div>
+
+  <!-- 价格 + sparkline + CTA -->
+  <div class="flex items-end justify-between gap-3">
+    <div>
+      {derived?.effectiveMonthly != null && derived.effectiveMonthly > 0 ? (
+        <div class="flex items-baseline gap-1">
+          <span class="text-[10px] text-fg-3">¥</span>
+          <span class="font-mono text-2xl font-bold text-fg-1">{derived.effectiveMonthly.toLocaleString()}</span>
+          <span class="text-[10px] text-fg-3">/月起</span>
+        </div>
+      ) : (
+        <div class="text-xs text-fg-3">价格详见官方</div>
+      )}
+      {derived?.pricePerMillion != null && (
+        <div class="text-[10px] text-fg-3 mt-0.5 font-mono">¥{derived.pricePerMillion} / 1M tokens</div>
+      )}
+    </div>
+    <div class="flex flex-col items-end gap-1.5">
+      {spark && <div set:html={spark} class="opacity-80"></div>}
+      <a class="btn-primary !text-xs !py-1.5 !px-3" href={action} target="_blank" rel="noopener sponsored">
+        前往
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</article>

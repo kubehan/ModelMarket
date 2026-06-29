@@ -1,0 +1,76 @@
+---
+import { config, allVendors, allModels } from '../lib/data'
+
+const vendors = allVendors()
+const models = allModels()
+const types: Array<{ value: 'all' | 'coding' | 'agent' | 'token', label: string }> = [
+  { value: 'all',    label: '全部'       },
+  { value: 'coding', label: 'Coding'    },
+  { value: 'agent',  label: 'Agent'     },
+  { value: 'token',  label: 'Token'     }
+]
+---
+<div id="filter-bar" class="glass rounded-2xl p-4 sm:p-5 mb-5">
+  <div class="flex flex-wrap items-center gap-2.5">
+    <!-- 搜索框 -->
+    <div class="flex items-center gap-1 flex-1 min-w-[220px] h-10 px-3 rounded-xl bg-white/[0.03] border border-line-2 text-sm transition focus-within:border-violet-500/40 focus-within:bg-white/[0.06]">
+      <svg class="text-fg-3 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="filter-search" type="text" autocomplete="off" placeholder="搜索套餐、模型、标签…" class="flex-1 bg-transparent text-fg-1 placeholder:text-fg-4 text-sm focus:outline-none px-2" />
+      <button id="open-cmdk" type="button" class="flex items-center gap-1 text-fg-4 hover:text-fg-2 transition shrink-0">
+        <kbd>⌘</kbd><kbd>K</kbd>
+      </button>
+    </div>
+
+    <!-- 类型 segmented -->
+    <div class="flex items-center gap-1 rounded-xl bg-white/5 border border-line-2 p-1">
+      {types.map(t => (
+        <button
+          type="button"
+          data-type={t.value}
+          class="filter-type-btn px-3 h-8 text-xs font-semibold rounded-lg transition text-fg-2 hover:bg-white/5 data-[active=true]:bg-white/10 data-[active=true]:text-fg-1"
+          data-active={t.value === 'all'}
+        >{t.label}</button>
+      ))}
+    </div>
+
+    <select id="filter-vendor" class="input-dark h-10 text-sm cursor-pointer">
+      <option value="">全部平台</option>
+      {vendors.map(v => <option value={v}>{v}</option>)}
+    </select>
+
+    <select id="filter-model" class="input-dark h-10 text-sm cursor-pointer">
+      <option value="">全部模型</option>
+      {models.map(m => <option value={m}>{m}</option>)}
+    </select>
+
+    <label class="inline-flex items-center gap-2 h-10 px-3 rounded-xl bg-white/5 border border-line-2 text-sm cursor-pointer hover:border-line-3 transition">
+      <input id="filter-show-offline" type="checkbox" class="accent-violet-500 w-3.5 h-3.5" />
+      <span class="text-fg-2">含已下线</span>
+    </label>
+
+    <button id="open-calc" type="button" class="btn-ghost h-10">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 12h8M8 17h5"/></svg>
+      成本估算
+    </button>
+
+    <button id="filter-reset" type="button" class="btn-ghost h-10">重置</button>
+
+    <div class="ml-auto text-xs text-fg-3 hidden sm:flex items-center gap-2">
+      <span class="font-mono"><strong id="filter-count" class="text-fg-1">0</strong> / <strong id="filter-total" class="text-fg-2">0</strong></span>
+      <span>个套餐</span>
+    </div>
+  </div>
+
+  {config.presetTags.length > 0 && (
+    <div class="mt-3 pt-3 border-t border-line-1 flex flex-wrap items-center gap-2">
+      <span class="text-[10px] uppercase tracking-[0.15em] font-bold text-fg-3">快速预设</span>
+      {config.presetTags.map(p => (
+        <button
+          type="button"
+          class="preset-tag-btn chip cursor-pointer hover:border-violet-500/40"
+          data-tag={p.tag}
+        >{p.label}</button>
+      ))}
+    </div>
+  )}
+</div>

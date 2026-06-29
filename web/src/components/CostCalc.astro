@@ -1,0 +1,45 @@
+---
+// 成本估算面板：根据 monthly token 用量 + 月请求数估算每个套餐的实际成本
+---
+<div id="calc-backdrop" class="drawer-backdrop"></div>
+<aside id="calc-drawer" class="drawer" role="dialog" aria-label="成本估算">
+  <div class="p-5 border-b border-line-2 flex items-center justify-between">
+    <div>
+      <div class="text-[10px] uppercase tracking-[0.15em] text-fg-3 font-bold">CALCULATOR</div>
+      <h3 class="text-lg font-bold mt-0.5">月度成本估算</h3>
+    </div>
+    <button id="calc-close" class="btn-ghost !p-2" aria-label="关闭">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="p-5 space-y-5">
+    <div>
+      <div class="flex items-center justify-between mb-2">
+        <label for="calc-tokens" class="text-sm font-semibold text-fg-1">每月 Token 用量</label>
+        <span class="font-mono text-sm text-cyan-400"><span id="calc-tokens-v">200</span> M</span>
+      </div>
+      <input id="calc-tokens" type="range" min="10" max="2000" value="200" step="10" class="w-full accent-violet-500"/>
+      <div class="flex justify-between text-[10px] text-fg-4 mt-1 font-mono">
+        <span>10M</span><span>2B</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="flex items-center justify-between mb-2">
+        <label for="calc-requests" class="text-sm font-semibold text-fg-1">每月请求数</label>
+        <span class="font-mono text-sm text-cyan-400"><span id="calc-requests-v">5000</span></span>
+      </div>
+      <input id="calc-requests" type="range" min="500" max="50000" value="5000" step="500" class="w-full accent-violet-500"/>
+      <div class="flex justify-between text-[10px] text-fg-4 mt-1 font-mono">
+        <span>500</span><span>50K</span>
+      </div>
+    </div>
+
+    <div class="divider-glow"></div>
+
+    <div>
+      <div class="text-[10px] uppercase tracking-[0.15em] text-fg-3 font-bold mb-3">推荐排序（按预估月成本）</div>
+      <ol id="calc-results" class="space-y-2"></ol>
+    </div>
+  </div>
+</aside>

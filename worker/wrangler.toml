@@ -1,0 +1,22 @@
+name = "modelmarket-go"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# 自定义域名：部署后绑 go.yourdomain.com
+# routes = [
+#   { pattern = "go.yourdomain.com/*", custom_domain = true }
+# ]
+
+# KV 命名空间存储 slug -> 目标 URL 映射
+# 创建：wrangler kv:namespace create LINKS
+# 然后把下面的 id 填入
+[[kv_namespaces]]
+binding = "LINKS"
+id = "REPLACE_WITH_KV_ID"
+preview_id = "REPLACE_WITH_PREVIEW_KV_ID"
+
+[vars]
+# 主站域名，用于回跳兜底
+SITE_URL = "https://modelmarket.example.com"
+# 是否记录点击日志到 KV（生产建议开启）
+TRACK_CLICKS = "1"

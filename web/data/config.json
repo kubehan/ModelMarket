@@ -1,0 +1,52 @@
+{
+  "site": {
+    "name": "ModelMarket",
+    "tagline": "AI Coding Plan 对比工具",
+    "description": "国内主流 AI 平台 Coding Plan / Agent Plan / Token Plan 套餐对比，涵盖智谱、Kimi、MiniMax、阿里百炼、字节方舟、讯飞星火、百度千帆、腾讯云、京东云等。价格、模型、用量一表看清。",
+    "updatedNote": "目前整体趋势是已经开始用 Token Plan 替换 Coding Plan，几个大厂阿里、字节、腾讯都改成 Token Plan 了，各位且买且珍惜。"
+  },
+  "recommendationGroups": [
+    {
+      "key": "top_rated",
+      "title": "综合首选",
+      "subtitle": "编辑评分最高，覆盖最广",
+      "planIds": ["zhipu-coding-pro", "xunfei-spark-pro", "minimax-coding", "fangzhou-agent", "kimi-coding"]
+    },
+    {
+      "key": "latest_model",
+      "title": "旗舰模型",
+      "subtitle": "支持 GLM-5.2 / Doubao-Seed-2.0 等",
+      "planIds": ["zhipu-coding-pro", "fangzhou-agent"]
+    },
+    {
+      "key": "volume",
+      "title": "高额度",
+      "subtitle": "Token 池子深，适合重度使用",
+      "planIds": ["minimax-coding", "fangzhou-agent"]
+    },
+    {
+      "key": "available",
+      "title": "随时可购",
+      "subtitle": "稳定库存，无需抢购",
+      "planIds": ["xunfei-spark-pro", "minimax-coding", "kimi-coding"]
+    }
+  ],
+  "presetTags": [
+    { "label": "模型强", "tag": "最新模型" },
+    { "label": "性价比高", "tag": "不用抢" },
+    { "label": "用量足", "tag": "量大管饱" }
+  ],
+  "community": {
+    "feishuTitle": "加入飞书群讨论",
+    "githubUrl": "https://github.com/yourname/modelmarket",
+    "feedbackUrl": "https://github.com/yourname/modelmarket/issues"
+  },
+  "changelog": [
+    { "date": "2026.6.29", "items": ["重构为静态站架构（Astro + Cloudflare Pages）"] },
+    { "date": "2026.5.8",  "items": ["字节方舟上线 AgentPlan，CodingPlan 开始限购"] },
+    { "date": "2026.4.30", "items": ["更新腾讯 TokenPlan 模型"] },
+    { "date": "2026.4.23", "items": ["更新小米 MiMo V2.5 模型和倍率"] },
+    { "date": "2026.4.21", "items": ["阿里上线 TokenPlan"] },
+    { "date": "2026.4.20", "items": ["腾讯下线 CodingPlan，仅保留 TokenPlan"] }
+  ]
+}

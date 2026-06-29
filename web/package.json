@@ -1,0 +1,21 @@
+{
+  "name": "modelmarket-web",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "validate": "node --experimental-vm-modules scripts/validate-data.mjs"
+  },
+  "dependencies": {
+    "astro": "^4.16.18",
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/tailwind": "^5.1.4",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "zod": "^3.24.1"
+  }
+}

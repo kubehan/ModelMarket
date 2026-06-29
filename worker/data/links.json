@@ -1,0 +1,14 @@
+{
+  "links": {
+    "zhipu":     { "url": "https://bigmodel.cn/?ref=MODELMARKET",      "note": "智谱AI CodingPlan" },
+    "xunfei":    { "url": "https://xinghuo.xfyun.cn/?ref=MODELMARKET", "note": "讯飞·星火" },
+    "minimax":   { "url": "https://www.minimaxi.com/?ref=MODELMARKET", "note": "MiniMax" },
+    "fangzhou":  { "url": "https://www.volcengine.com/?ref=MODELMARKET", "note": "字节·方舟" },
+    "kimi":      { "url": "https://www.moonshot.cn/?ref=MODELMARKET",  "note": "Kimi" },
+    "ali":       { "url": "https://bailian.console.aliyun.com/?ref=MODELMARKET", "note": "阿里·百炼" },
+    "tencent":   { "url": "https://cloud.tencent.com/?ref=MODELMARKET", "note": "腾讯云" },
+    "baidu":     { "url": "https://qianfan.cloud.baidu.com/?ref=MODELMARKET", "note": "百度·千帆" },
+    "mimo":      { "url": "https://mimo.xiaomi.com/?ref=MODELMARKET",  "note": "小米·MiMo" },
+    "jdcloud":   { "url": "https://www.jdcloud.com/?ref=MODELMARKET",  "note": "京东云" }
+  }
+}
